@@ -1,0 +1,14 @@
+{
+  "apps": [
+    {
+      "name": "bbs10",
+      "script": "./server/index.js",
+      "watch": true,
+      "env": {
+        "HOST": "127.0.0.1",
+        "PORT": 3100,
+        "NODE_ENV": "production"
+      }
+    }
+  ]
+}
