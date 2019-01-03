@@ -3,13 +3,22 @@ os: linux
 files:
   - source: /
     destination: /home/ec2-user/repos/bbs
+permissions:
+  - object: /
+    owner: ec2-user
+    group: ec2-user
+    mode: 777
+    pattern: '**'
 hooks:
   ApplicationStop:
     - location: pipeline/stop.sh
       timeout: 600
+      runas: ec2-user
   AfterInstall:
     - location: pipeline/install.sh
       timeout: 6000
+      runas: ec2-user
   ApplicationStart:
     - location: pipeline/start.sh
       timeout: 6000
+      runas: ec2-user
