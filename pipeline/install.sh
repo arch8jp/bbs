@@ -1,5 +1,4 @@
 #!/bin/bash
-source /home/ec2-user/.bashrc
 cd /home/ec2-user/repos/bbs
-npm install
-npm run build
+/home/ec2-user/.nvm/versions/node/v11.6.0/bin/npm install
+/home/ec2-user/.nvm/versions/node/v11.6.0/bin/npm run build
