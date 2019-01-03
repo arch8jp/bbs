@@ -11,10 +11,10 @@ permissions:
     pattern: '**'
 hooks:
   AfterInstall:
-    - location: pipeline/install.sh
+    - location: hooks/install.sh
       timeout: 6000
       runas: ec2-user
   ApplicationStart:
-    - location: pipeline/start.sh
+    - location: hooks/start.sh
       timeout: 6000
       runas: root
