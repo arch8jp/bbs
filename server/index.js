@@ -12,6 +12,11 @@ app.set('port', port)
 
 app.use(bodyParser.json())
 
+app.get('/', (req, res, next) => {
+  res.data = { messages: posts }
+  next()
+})
+
 app.post('/', (req, res) => {
   posts.push(req.body.message)
   res.end()

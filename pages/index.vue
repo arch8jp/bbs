@@ -2,15 +2,16 @@
   <div>
     <h1>bbs</h1>
     <form @submit.prevent="onSubmit">
-      <input 
+      <input
         v-model="message"
         type="text"
         required>
       <input type="submit">
     </form>
-    <post content="hoge" />
-    <post content="fuga" />
-    <post content="piyo" />
+    <post
+      v-for="(message, i) in messages"
+      :content="message"
+      :key="i" />
   </div>
 </template>
 
@@ -21,9 +22,15 @@ export default {
   components: {
     Post
   },
+  async asyncData({ res }) {
+    return {
+      messages: res.data.messages
+    }
+  },
   data() {
     return {
-      message: ''
+      message: '',
+      messages: []
     }
   },
   methods: {
