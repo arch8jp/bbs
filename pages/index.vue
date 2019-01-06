@@ -15,7 +15,7 @@ import Post from "~/components/Post.vue";
 export default {
   components: { Post },
   async asyncData({ res }) {
-    return { messages: res.data.messages };
+    return { messages: res ? res.data.messages : [] };
   },
   data() {
     return { message: "", messages: [] };

@@ -22,17 +22,25 @@ const dbRun = util.promisify((sql, arg, callback) =>
   db.run(sql, arg, callback)
 );
 const addPost = message =>
-  dbRun("INSERT INTO posts(message) VALUES(?)", message);
-const getPosts = () => dbAll("SELECT id, message FROM posts LIMIT 10");
-const filterMessages = posts => posts.map(post => post.message);
+  dbRun("INSERT INTO posts(message) VALUES(?)", [message]);
+
+const getPostMessages = async (limit = 100) => {
+  try {
+    const posts = await dbAll("SELECT id, message FROM posts LIMIT ?", [limit]);
+    const messages = posts.map(post => post.message);
+    return messages;
+  } catch (error) {
+    return [];
+  }
+};
+const GET_LIMIT = 100;
 
 app.set("port", port);
 
 app.use(bodyParser.json());
 
 app.get("/", async (req, res, next) => {
-  const posts = await getPosts();
-  const messages = filterMessages(posts);
+  const messages = await getPostMessages(GET_LIMIT);
   res.data = { messages };
   next();
 });
