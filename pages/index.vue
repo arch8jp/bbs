@@ -1,12 +1,11 @@
 <template>
   <div>
     <h1>bbs</h1>
-    <form 
-      action="/" 
-      method="post">
+    <form @submit.prevent="onSubmit">
       <input 
-        type="text" 
-        name="message">
+        v-model="message"
+        type="text"
+        required>
       <input type="submit">
     </form>
     <post content="hoge" />
@@ -21,6 +20,19 @@ import Post from '~/components/Post.vue'
 export default {
   components: {
     Post
+  },
+  data() {
+    return {
+      message: ''
+    }
+  },
+  methods: {
+    onSubmit() {
+      this.$axios.$post('/', {
+        message: this.message
+      })
+      this.message = ''
+    }
   }
 }
 </script>
