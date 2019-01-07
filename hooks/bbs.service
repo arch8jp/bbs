@@ -1,0 +1,13 @@
+[Unit]
+Description=Nuxt app Agent
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/npm run start
+WorkingDirectory=/home/ec2-user/repos/bbs
+EnvironmentFile=/home/ec2-user/repos/bbs/hooks/environment
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
