@@ -1,2 +1,2 @@
-API_HOST=bbs.arch8.jp
-API_PORT=80
+PORT=3100
+API_URL=https://bbs.arch8.jp
