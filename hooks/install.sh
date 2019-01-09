@@ -1,6 +1,6 @@
 #!/bin/bash
 cd /home/ec2-user/repos/bbs
-API_URL=https://bbs.arch8.jp
+export API_URL=https://bbs.arch8.jp
 npm install
 npm run build
 
