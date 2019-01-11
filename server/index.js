@@ -11,9 +11,18 @@ const port = process.env.PORT || 3000;
 const db = new sqlite3.Database("bbs.db");
 db.run(
   `CREATE TABLE IF NOT EXISTS posts(
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  post_id INTEGER PRIMARY KEY AUTOINCREMENT,
   message STRING,
-  user STIRNG)`
+  user STIRNG,
+  created_at TIMESTAMP DEFAULT (DATETIME('now','localtime')))`
+);
+db.run(
+  `CREATE TABLE IF NOT EXISTS replies(
+  reply_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  post_id INTEGER,
+  message STRING,
+  user STIRNG,
+  created_at TIMESTAMP DEFAULT (DATETIME('now','localtime')))`
 );
 const dbAll = util.promisify((sql, arg, callback) =>
   db.all(sql, arg, callback)
@@ -22,13 +31,30 @@ const dbRun = util.promisify((sql, arg, callback) =>
   db.run(sql, arg, callback)
 );
 const addPost = message =>
-  dbRun("INSERT INTO posts(message) VALUES(?)", [message]);
+  dbRun("INSERT INTO posts(message) VALUES(?)", [String(message)]);
 
-const getPostMessages = async (limit = 100) => {
+const addReply = (post_id, message) =>
+  dbRun("INSERT INTO replies(post_id, message) VALUES(?, ?)", [
+    post_id,
+    String(message)
+  ]);
+
+const getPosts = async (limit = 100) => {
   try {
-    const posts = await dbAll("SELECT id, message FROM posts LIMIT ?", [limit]);
-    const messages = posts.map(post => post.message);
-    return messages;
+    const posts = await dbAll(
+      "SELECT post_id, message, created_at FROM posts LIMIT ?",
+      [limit]
+    );
+    const replies = await dbAll(
+      "SELECT post_id, message, created_at FROM replies",
+      []
+    );
+    return posts.map(post => ({
+      post_id: post.post_id,
+      message: post.message,
+      created_at: post.created_at,
+      replies: replies.filter(reply => reply.post_id === post.post_id)
+    }));
   } catch (error) {
     return [];
   }
@@ -40,13 +66,18 @@ app.set("port", port);
 app.use(bodyParser.json());
 
 app.get("/", async (req, res, next) => {
-  const messages = await getPostMessages(GET_LIMIT);
-  res.data = { messages };
+  const posts = await getPosts(GET_LIMIT);
+  res.data = { posts };
   next();
 });
 
 app.post("/", (req, res) => {
   addPost(req.body.message);
+  res.end();
+});
+
+app.post("/reply", (req, res) => {
+  addReply(req.body.post_id, req.body.message);
   res.end();
 });
 
