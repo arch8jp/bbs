@@ -12,7 +12,7 @@
       </v-layout>
     </v-form>
     <v-list>
-      <post v-for="(message, i) in messages" :content="message" :key="i"/>
+      <post v-for="(post, i) in posts" :post="post" :key="i"/>
     </v-list>
   </div>
 </template>
@@ -23,10 +23,10 @@ import Post from "~/components/Post.vue";
 export default {
   components: { Post },
   async asyncData({ res }) {
-    return { messages: res ? res.data.messages : [] };
+    return { posts: res ? res.data.posts : [] };
   },
   data() {
-    return { message: "", messages: [] };
+    return { message: "", posts: [] };
   },
   methods: {
     onSubmit() {
