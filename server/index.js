@@ -22,7 +22,7 @@ const dbRun = util.promisify((sql, arg, callback) =>
   db.run(sql, arg, callback)
 );
 const addPost = message =>
-  dbRun("INSERT INTO posts(message) VALUES(?)", [message]);
+  dbRun("INSERT INTO posts(message) VALUES(?)", [String(message)]);
 
 const getPostMessages = async (limit = 100) => {
   try {
