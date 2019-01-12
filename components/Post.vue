@@ -94,7 +94,7 @@ export default {
     },
     fromNowLocalTime(timestamp) {
       const datetime = moment(timestamp);
-      datetime.add(new Date().getTimezoneOffset(), "minutes");
+      datetime.subtract(new Date().getTimezoneOffset(), "minutes");
       datetime.locale("ja");
       return datetime.fromNow();
     }
