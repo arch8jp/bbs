@@ -8,7 +8,7 @@ db.run(
     message STRING,
     user STIRNG,
     reply_count INTEGER DEFAULT 0,
-    created_at TIMESTAMP DEFAULT (DATETIME('now','localtime')))`
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`
 );
 
 db.run(
@@ -17,7 +17,7 @@ db.run(
     post_id INTEGER,
     message STRING,
     user STIRNG,
-    created_at TIMESTAMP DEFAULT (DATETIME('now','localtime')))`
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`
 );
 
 const dbAll = util.promisify((sql, arg, callback) =>
