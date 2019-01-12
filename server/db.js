@@ -8,7 +8,7 @@ db.run(
     message STRING,
     user STIRNG,
     reply_count INTEGER DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`
 );
 
 db.run(
