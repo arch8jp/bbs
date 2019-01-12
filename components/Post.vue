@@ -12,7 +12,7 @@
           <v-list-tile-sub-title v-if="isOpenReplies" @click="isOpenReplies=false">返信を非表示</v-list-tile-sub-title>
         </v-list-tile-content>
         <v-list-tile-action>
-          <v-list-tile-action-text>{{ fromNow(post.created_at) }}</v-list-tile-action-text>
+          <v-list-tile-action-text>{{ fromNowLocalTime(post.created_at) }}</v-list-tile-action-text>
           <v-btn v-if="!isWritting" flat @click="isWritting=true">返信</v-btn>
         </v-list-tile-action>
       </v-list-tile>
@@ -31,7 +31,7 @@
             <v-list-tile-title>{{ reply.message }}</v-list-tile-title>
           </v-list-tile-content>
           <v-list-tile-action>
-            <v-list-tile-action-text>{{ fromNow(reply.created_at) }}</v-list-tile-action-text>
+            <v-list-tile-action-text>{{ fromNowLocalTime(reply.created_at) }}</v-list-tile-action-text>
           </v-list-tile-action>
         </v-list-tile>
         <v-btn v-if="hasMoreReplies" flat @click="loadMoreReplies">さらに返信を表示</v-btn>
@@ -92,8 +92,9 @@ export default {
     async loadMoreReplies() {
       await this.fetchNextReplies(5);
     },
-    fromNow(timestamp) {
+    fromNowLocalTime(timestamp) {
       const datetime = moment(timestamp);
+      datetime.add(new Date().getTimezoneOffset(), "minutes");
       datetime.locale("ja");
       return datetime.fromNow();
     }
