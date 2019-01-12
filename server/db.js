@@ -44,7 +44,7 @@ const addReply = (post_id, message) => {
 const getPosts = async (limit, offset) => {
   try {
     return await dbAll(
-      "SELECT post_id, message, reply_count, created_at FROM posts LIMIT ? OFFSET ?",
+      "SELECT post_id, message, reply_count, created_at FROM posts ORDER BY post_id DESC LIMIT ? OFFSET ?",
       [limit, offset]
     );
   } catch (error) {
@@ -56,7 +56,7 @@ const getPosts = async (limit, offset) => {
 const getReplies = async (post_id, limit, offset) => {
   try {
     return await dbAll(
-      "SELECT message, created_at FROM replies WHERE post_id=? LIMIT ? OFFSET ?",
+      "SELECT message, created_at FROM replies WHERE post_id=?  ORDER BY reply_id DESC LIMIT ? OFFSET ?",
       [post_id, limit, offset]
     );
   } catch (error) {
