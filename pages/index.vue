@@ -12,7 +12,7 @@
       </v-layout>
     </v-form>
     <v-list two-line>
-      <post v-for="(post, $index) in posts" :key="$index" :post="post" @refresh="refresh"/>
+      <post v-for="post in posts" :key="post.post_id" :post="post" @refresh="refresh"/>
       <infinite-loading spinner="spiral" @infinite="infinitePostsHandler"/>
     </v-list>
   </div>
