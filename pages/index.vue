@@ -13,25 +13,42 @@
     </v-form>
     <v-list>
       <post v-for="(post, i) in posts" :post="post" :key="i"/>
+      <infinite-loading spinner="spiral" @infinite="infinitePostsHandler"/>
     </v-list>
   </div>
 </template>
 
 <script>
 import Post from "~/components/Post.vue";
+import InfiniteLoading from "vue-infinite-loading";
 
 export default {
-  components: { Post },
+  components: { Post, InfiniteLoading },
   async asyncData({ res }) {
-    return { posts: res ? res.data.posts : [] };
+    return res
+      ? { posts: res.data.posts, last: res.data.posts.length }
+      : { posts: [], last: 0 };
   },
   data() {
-    return { message: "", posts: [] };
+    return { message: "", posts: [], last: 0 };
   },
   methods: {
     onSubmit() {
       this.$axios.$post("/", { message: this.message });
       this.message = "";
+    },
+    async infinitePostsHandler($state) {
+      const LIMIT = 10;
+      const response = await this.$axios.$get("/posts", {
+        params: { offset: this.last, limit: LIMIT }
+      });
+      if (response.posts.length) {
+        this.posts.push(...response.posts);
+        this.last += LIMIT;
+        $state.loaded();
+      } else {
+        $state.complete();
+      }
     }
   }
 };
