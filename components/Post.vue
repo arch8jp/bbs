@@ -4,6 +4,12 @@
       <v-list-tile>
         <v-list-tile-content>
           <v-list-tile-title>{{ post.message }}</v-list-tile-title>
+          <v-list-tile-sub-title
+            v-if="post.reply_count!==0&&!isOpenReplies"
+            flat
+            @click="openReplies"
+          >{{ post.reply_count }}件の返信を表示</v-list-tile-sub-title>
+          <v-list-tile-sub-title v-if="isOpenReplies" @click="isOpenReplies=false">返信を閉じる</v-list-tile-sub-title>
         </v-list-tile-content>
         <v-list-tile-action>
           <v-list-tile-action-text>{{ post.created_at }}</v-list-tile-action-text>
@@ -11,8 +17,16 @@
         </v-list-tile-action>
       </v-list-tile>
 
-      <v-container v-if="post.replies.length" grid-list-xl>
-        <v-list-tile v-for="(reply, i) in post.replies" :key="i">
+      <v-list-tile v-if="isWritting">
+        <v-list-tile-content>
+          <v-text-field v-model="message" required label="返信を追加..."/>
+        </v-list-tile-content>
+        <v-btn depressed @click="isWritting=false">キャンセル</v-btn>
+        <v-btn depressed @click="reply">返信する</v-btn>
+      </v-list-tile>
+
+      <v-container v-if="isOpenReplies" grid-list-xl>
+        <v-list-tile v-for="(reply, i) in replies" :key="i">
           <v-list-tile-content>
             <v-list-tile-title>{{ reply.message }}</v-list-tile-title>
           </v-list-tile-content>
@@ -20,15 +34,8 @@
             <v-list-tile-action-text>{{ reply.created_at }}</v-list-tile-action-text>
           </v-list-tile-action>
         </v-list-tile>
+        <v-btn v-if="hasMoreReplies" flat @click="loadMoreReplies">さらに返信を表示</v-btn>
       </v-container>
-
-      <v-list-tile v-if="isWritting">
-        <v-list-tile-content>
-          <v-text-field v-model="message" required label="返信を追加..."/>
-        </v-list-tile-content>
-        <v-btn depressed @click="isWritting=false">キャンセル</v-btn>
-        <v-btn depressed @click="reply(post.post_id)">返信する</v-btn>
-      </v-list-tile>
     </v-container>
     <v-divider/>
   </div>
@@ -43,12 +50,46 @@ export default {
     }
   },
   data() {
-    return { isWritting: false, message: "" };
+    return {
+      isOpenReplies: false,
+      hasMoreReplies: undefined,
+      isWritting: false,
+      replies: [],
+      message: "",
+      offset: 0,
+      limit: 10
+    };
   },
   methods: {
-    reply(post_id) {
+    reply() {
       this.isWritting = false;
-      this.$axios.$post("/reply", { post_id, message: this.message });
+      this.$axios.$post("/reply", {
+        post_id: this.post.post_id,
+        message: this.message
+      });
+    },
+    async fetchNextReplies(limit) {
+      const response = await this.$axios.$get("/replies", {
+        params: { post_id: this.post.post_id, offset: this.offset, limit }
+      });
+      if (response.replies.length) {
+        this.replies.push(...response.replies);
+        this.offset += limit;
+      }
+      if (response.replies.length === limit) {
+        this.hasMoreReplies = true;
+      } else {
+        this.hasMoreReplies = false;
+      }
+    },
+    async openReplies() {
+      if (!this.replies.length) {
+        await this.fetchNextReplies(5);
+      }
+      this.isOpenReplies = true;
+    },
+    async loadMoreReplies() {
+      await this.fetchNextReplies(5);
     }
   }
 };
